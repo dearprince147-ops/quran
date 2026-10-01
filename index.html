@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=5">
+<meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+<title>Quran</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./assets/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Quran">
+<meta name="application-name" content="Quran">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Nastaliq+Urdu:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fafaf9;--fg:#1c1c1e;--mute:#8e8e93;--line:#e5e5ea;--acc:#3a6ea5;--gold:#a68454;--card:#ffffff;--hl:#e8f0f8;--on-acc:#ffffff;
+  --z:1;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
+  --gut:clamp(16px,5vw,44px);
+  --fs-ar:clamp(1.6rem,1.1rem + 2.5vw,2.4rem);
+  --fs-ur:clamp(1.2rem,1rem + 1.5vw,1.7rem);
+  --fs-tx:clamp(1.05rem,.95rem + .6vw,1.25rem);
+  --f-ar:'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif;
+  --f-ur:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',serif;
+  --f-ui:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+}
+html[data-theme=dark]{
+  --bg:#121214;--fg:#f2f2f7;--mute:#8e8e93;--line:#2c2c2e;--acc:#6ba3d6;--gold:#c9ab7d;--card:#1c1c1e;--hl:#2c3e50;--on-acc:#121214;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;height:100dvh;height:100%;background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:16px;overscroll-behavior:none;-webkit-text-size-adjust:100%;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+/* ---------- Dashboard ---------- */
+#home{position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;max-width:640px;margin:0 auto;padding:calc(var(--sat) + 28px) calc(20px + var(--sar)) calc(var(--sab) + 60px) calc(20px + var(--sal))}
+.hero{text-align:center;padding:8px 0 28px}
+.hero h1{font-family:var(--f-ar);font-weight:400;font-size:clamp(2.2rem,8vw,3rem);line-height:1.8;margin:0;color:var(--fg)}
+.hero p{margin:4px 0 0;color:var(--mute);font-size:.9rem; letter-spacing: 0.01em;}
+.cont{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;
+  background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:24px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);}
+.cont b{display:block;font-size:1.05rem;font-weight:500}
+.cont small{opacity:.7;font-size:.82rem; color: var(--mute);}
+.cont .go{font-family:var(--f-ar);font-size:1.4rem; color: var(--acc);}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tabs button{flex:1;padding:14px 2px;color:var(--mute);border-bottom:1.5px solid transparent;margin-bottom:-1px;font-size:.88rem; font-weight: 400; letter-spacing: 0.02em;}
+.tabs button[aria-selected=true]{color:var(--fg);border-color:var(--fg);font-weight:500}
+.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit;margin-bottom:12px; font-size: 0.95rem;}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 4px;border-bottom:1px solid var(--line)}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-weight:500; font-size: 0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.row .t small{color:var(--mute); font-size: 0.8rem;}
+.row .ar{font-family:var(--f-ar);font-size:1.35rem;color:var(--fg);text-align:right;line-height:2.4;display:block}
+.row .pg{display:block;font-size:.7rem;color:var(--mute);text-align:right; margin-top: 2px;}
+.num{position:relative;flex:none;width:36px;height:36px;display:grid;place-items:center;font-size:.8rem;color:var(--mute); font-weight: 500;}
+.num::before{content:"";position:absolute;inset:0;border:1px solid var(--line);border-radius:50%}
+.num::after{display:none;}
+.num span{position:relative}
+.empty{color:var(--mute);padding:40px 4px;text-align:center; font-size: 0.9rem; line-height: 1.6;}
+.grp{padding:18px 2px;border-bottom:1px solid var(--line)}
+.grp h3{margin:0 0 12px;font-size:.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mute); font-weight: 500;}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--fg);font-size:.85rem;min-height:38px; transition: all 0.2s ease;}
+.chip[aria-pressed=true]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.lrow{display:flex;align-items:center;gap:10px;padding:8px 0}
+.lrow .n{flex:1; font-size: 0.9rem;}
+.link{color:var(--acc);text-decoration:none;font-size:.85rem;padding:6px 0; font-weight: 500;}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.note{color:var(--mute);font-size:.82rem;margin:10px 0 0;line-height:1.5}
+
+/* ---------- Reader ---------- */
+#reader{position:fixed;inset:0;background:var(--bg);z-index:5;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#stage{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+#page{max-width:46rem;margin:0 auto;min-height:100%;
+  padding:calc(var(--sat) + 72px) calc(var(--gut) + var(--sar)) calc(var(--sab) + 80px) calc(var(--gut) + var(--sal))}
+#page.sn{animation:sn .22s ease-out}
+#page.sp{animation:sp .22s ease-out}
+@keyframes sn{from{opacity:0;transform:translateX(5%)}to{opacity:1;transform:none}}
+@keyframes sp{from{opacity:0;transform:translateX(-5%)}to{opacity:1;transform:none}}
+
+#top{position:fixed;z-index:6;top:0;left:0;right:0;height:calc(var(--sat) + 60px);display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sat) calc(64px + var(--sar)) 0 calc(var(--gut) + var(--sal));pointer-events:none;
+  background:linear-gradient(var(--bg) 75%,transparent)}
+#topname{font:inherit;font-size:.85rem;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:400;
+  display:inline-flex;align-items:center;gap:3px;max-width:100%;margin:0;padding:6px 2px;border:0;background:none;cursor:pointer;pointer-events:auto;
+  transition:color .15s ease,opacity .15s ease}
+#topname:hover{color:var(--fg)}
+#topname:active{opacity:.6}
+#topname svg{width:17px;height:17px;flex:none;transform:translateX(-1px)}
+#toppage{font-size:.8rem;color:var(--mute);white-space:nowrap;flex:none;letter-spacing:.03em;opacity:.85}
+#spk{position:fixed;z-index:8;top:calc(var(--sat) + 8px);right:calc(12px + var(--sar));width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;color:var(--fg);background:var(--card);border:1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: all 0.2s ease;}
+#spk svg{display:none;width:20px;height:20px}
+body[data-audio=idle] #spk .i-idle,body[data-audio=playing] #spk .i-pause,body[data-audio=paused] #spk .i-play{display:block}
+body[data-audio=playing] #spk{background:var(--fg);color:var(--bg);border-color:var(--fg); box-shadow: 0 4px 16px rgba(0,0,0,0.12);}
+body[data-audio=paused] #spk{border-color:var(--fg); color: var(--fg);}
+
+.sh{text-align:center;margin:1.5rem 0 2.5rem;padding:1rem 0;border-bottom:1px solid var(--line);border-top:none;}
+.sh .a{font-family:var(--f-ar);font-size:calc(var(--fs-ar)*1.1*var(--z));color:var(--fg);line-height:2.4; font-weight: 400;}
+.sh .e{font-size:calc(.85rem*var(--z));color:var(--mute); margin-top: 6px; letter-spacing: 0.02em;}
+.bism{text-align:center;font-family:var(--f-ar);font-size:calc(var(--fs-ar)*var(--z));line-height:2.4;margin:0 0 2rem; color: var(--fg);}
+.para{margin:0 0 2.5rem}
+.blk{margin:0;overflow-wrap:break-word;word-break:normal}
+.blk[data-l=ar]{font-family:var(--f-ar);font-size:calc(var(--fs-ar)*var(--z));line-height:2.8;text-align:right; text-justify: inter-word;}
+.blk[data-l=ur]{font-family:var(--f-ur);font-size:calc(var(--fs-ur)*var(--z));line-height:3.4;text-align:right}
+.blk[data-l=en]{font-size:calc(var(--fs-tx)*var(--z));line-height:1.8;text-align:start}
+.blk:not([data-l=ar]):not([data-l=ur]):not([data-l=en]){font-size:calc(var(--fs-tx)*var(--z));line-height:1.85;text-align:start}
+.blk.tr{margin-top:1.2rem;color:var(--mute);padding-inline-start:1rem;border-inline-start:1px solid var(--line)}
+.ay{border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:background .2s ease, color .2s ease}
+.ay.on{background:var(--hl);color:var(--fg)}
+.vn{color:var(--mute);white-space:nowrap; font-size: 0.8em;}
+.no{color:var(--mute);font-family:var(--f-ui);font-size:.7em;vertical-align:super;margin-inline-end:.4em;line-height:0}
+.foot{text-align:center;color:var(--mute);font-size:.75rem;opacity:.6;margin-top:2rem; letter-spacing: 0.05em;}
+.msg{text-align:center;color:var(--mute);padding:20vh 0 0}
+.msg button{color:var(--acc);text-decoration:underline;margin-top:12px;padding:8px}
+
+/* sheet + modal + toast */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20;display:flex;align-items:flex-end;justify-content:center; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);}
+.sheet{width:100%;max-width:560px;max-height:82dvh;overflow:auto;background:var(--card);border-radius:18px 18px 0 0;
+  padding:20px calc(20px + var(--sar)) calc(var(--sab) + 24px) calc(20px + var(--sal));animation:up .2s ease-out; box-shadow: 0 -4px 24px rgba(0,0,0,0.08);}
+@keyframes up{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.sheet h3{margin:18px 0 10px;font-size:.75rem;color:var(--mute);font-weight:500; text-transform: uppercase; letter-spacing: 0.05em;}
+.sheet h3:first-child{margin-top:0}
+.modal{align-items:center;padding:16px}
+.modal .sheet{border-radius:16px;max-height:80dvh}
+#toast{position:fixed;left:50%;bottom:calc(var(--sab) + 32px);transform:translateX(-50%) translateY(10px);background:var(--fg);color:var(--bg);
+  padding:10px 18px;border-radius:999px;font-size:.85rem;z-index:40;max-width:88vw;text-align:center;opacity:0;pointer-events:none;transition:all .25s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+@media (prefers-reduced-motion:reduce){#page.sn,#page.sp,.sheet{animation:none}.ay{transition:none}}
+
+/* ---------- Desktop: the layout above is phone-first; on wide screens we
+   widen the dashboard, split the surah/juz lists into columns, use a real
+   scrolling body (no double scrollbar from a fixed full-height container),
+   and give the reader page more width. ---------- */
+@media (min-width:768px) and (pointer:fine){
+  html,body{overflow:auto}                          /* let the page itself scroll */
+  #home{position:static;height:auto;min-height:100dvh;max-width:900px;
+        padding:40px 32px 80px;box-sizing:border-box}
+  .hero h1{font-size:clamp(2.6rem,4vw,3.4rem)}
+  .cont{padding:20px 24px;border-radius:16px}
+  .tabs button{padding:14px 18px;font-size:.95rem}
+
+  /* Surah / Juz lists: two columns on laptop, three on wide screens. */
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+        column-gap:28px}
+  .list .row{border-bottom:1px solid var(--line);padding:12px 6px}
+
+  /* Reader: wider text column, roomier header. */
+  #page{max-width:56rem;padding:0 24px}
+  #top{padding:12px 24px}
+
+  /* Sheets (options/add-language) float as centred dialogs, not bottom sheets. */
+  .sheet{max-width:600px;border-radius:18px;margin:auto}
+  .scrim{display:flex;align-items:center;justify-content:center;padding:24px}
+}
+@media (min-width:1200px) and (pointer:fine){
+  #home{max-width:1040px}
+  #page{max-width:60rem}
+  .list{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+}
+</style>
+</head>
+<body data-audio="idle">
+
+<main id="home">
+  <header class="hero">
+    <h1>القرآن الكريم</h1>
+    <p>Read, listen, and add your own languages.</p>
+  </header>
+  <button class="cont" id="cont"><span><b id="contT"></b><small id="contS"></small></span><span class="go">اقرأ</span></button>
+  <nav class="tabs" id="tabs" role="tablist">
+    <button role="tab" data-t="surahs">Surahs</button>
+    <button role="tab" data-t="juz">Juz</button>
+    <button role="tab" data-t="marks">Bookmarks</button>
+    <button role="tab" data-t="set">Settings</button>
+  </nav>
+  <section id="panel"></section>
+</main>
+
+<div id="reader" hidden>
+  <div id="top"><button id="topname" aria-label="Back to home" title="Back to home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span id="toptxt"></span></button><span id="toppage"></span></div>
+  <button id="spk" aria-label="Play audio">
+    <svg class="i-idle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+    <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+    <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+  </button>
+  <div id="stage"><div id="page"></div></div>
+</div>
+
+<div id="overlay" class="scrim" hidden></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ================= Data ================= */
+const API='https://api.alquran.cloud/v1';
+const AUDIO='https://cdn.islamic.network/quran/audio/128/';
+const AYAH='https://everyayah.com/data/';     // translation recitations (verse-by-verse)
+const LDIR='assets/audio/';               // pre-bundled recitations served from the app itself
+const PDIR='assets/pages/';               // pre-bundled Quran text served from the app itself
+
+// Text editions fully bundled under assets/pages/ (offline, shared on the network).
+// fetchEdition falls back to the API for any edition not listed here.
+const PAGED=['quran-uthmani','en.sahih','ur.jalandhry'];
+
+// True if a full recitation for this language is bundled in assets/audio/.
+// The bundled copy is shared with every device on the network — no per-browser
+// download, no quota, no eviction.
+const bundled=id=>{try{return BUNDLED.indexOf(id)>=0}catch{return false}};
+const BUNDLED=['ar','en','ur'];
+const NAMES="Al-Fatihah,Al-Baqarah,Ali 'Imran,An-Nisa,Al-Ma'idah,Al-An'am,Al-A'raf,Al-Anfal,At-Tawbah,Yunus,Hud,Yusuf,Ar-Ra'd,Ibrahim,Al-Hijr,An-Nahl,Al-Isra,Al-Kahf,Maryam,Ta-Ha,Al-Anbiya,Al-Hajj,Al-Mu'minun,An-Nur,Al-Furqan,Ash-Shu'ara,An-Naml,Al-Qasas,Al-'Ankabut,Ar-Rum,Luqman,As-Sajdah,Al-Ahzab,Saba,Fatir,Ya-Sin,As-Saffat,Sad,Az-Zumar,Ghafir,Fussilat,Ash-Shura,Az-Zukhruf,Ad-Dukhan,Al-Jathiyah,Al-Ahqaf,Muhammad,Al-Fath,Al-Hujurat,Qaf,Adh-Dhariyat,At-Tur,An-Najm,Al-Qamar,Ar-Rahman,Al-Waqi'ah,Al-Hadid,Al-Mujadila,Al-Hashr,Al-Mumtahanah,As-Saff,Al-Jumu'ah,Al-Munafiqun,At-Taghabun,At-Talaq,At-Tahrim,Al-Mulk,Al-Qalam,Al-Haqqah,Al-Ma'arij,Nuh,Al-Jinn,Al-Muzzammil,Al-Muddaththir,Al-Qiyamah,Al-Insan,Al-Mursalat,An-Naba,An-Nazi'at,'Abasa,At-Takwir,Al-Infitar,Al-Mutaffifin,Al-Inshiqaq,Al-Buruj,At-Tariq,Al-A'la,Al-Ghashiyah,Al-Fajr,Al-Balad,Ash-Shams,Al-Layl,Ad-Duha,Ash-Sharh,At-Tin,Al-'Alaq,Al-Qadr,Al-Bayyinah,Az-Zalzalah,Al-'Adiyat,Al-Qari'ah,At-Takathur,Al-'Asr,Al-Humazah,Al-Fil,Quraysh,Al-Ma'un,Al-Kawthar,Al-Kafirun,An-Nasr,Al-Masad,Al-Ikhlas,Al-Falaq,An-Nas".split(',');
+const START=[1,2,50,77,106,128,151,177,187,208,221,235,249,255,262,267,282,293,305,312,322,332,342,350,359,367,377,385,396,404,411,415,418,428,434,440,446,453,458,467,477,483,489,496,499,502,507,511,515,518,520,523,526,528,531,534,537,542,545,549,551,553,554,556,558,560,562,564,566,568,570,572,574,575,577,578,580,582,583,585,586,587,587,589,590,591,591,592,593,594,595,595,596,596,597,597,598,598,599,599,600,600,600,601,601,601,602,602,602,603,603,603,604,604,604];
+const JUZ=[1,22,42,62,82,102,121,142,162,182,201,222,242,262,282,302,322,342,362,382,402,422,442,462,482,502,522,542,562,582];
+const BASE_LANGS=[
+  {id:'ar',label:'Arabic',native:'العربية',edition:'quran-uthmani',dir:'rtl',tts:'ar-SA',code:'ar',audio:'ar.alafasy'},
+  {id:'en',label:'English',native:'English',edition:'en.sahih',dir:'ltr',tts:'en-US',code:'en',ayah:'English/Sahih_Intnl_Ibrahim_Walk_192kbps'},
+  {id:'ur',label:'Urdu',native:'اردو',edition:'ur.jalandhry',dir:'rtl',tts:'ur-PK',code:'ur',ayah:'translations/urdu_shamshad_ali_khan_46kbps'}
+];
+const MAX_AYAHS=7, MAX_CHARS=900;   // paragraph size limits (paragraphs also break at each ruku and surah start)
+
+/* ================= State ================= */
+const $=(s,e=document)=>e.querySelector(s);
+const $$=(s,e=document)=>[...e.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+};
+let S=Object.assign({theme:'auto',show:['ar','en'],listen:['ar','en'],scale:1,swipe:'left',last:1,marks:[],custom:[],hint:0,hint2:0},store.get('qr.state',{}));
+const save=()=>store.set('qr.state',S);
+const langs=()=>[...BASE_LANGS,...S.custom];
+const L=id=>langs().find(l=>l.id===id)||BASE_LANGS[0];
+// True when a language should play a recorded recitation rather than the device voice.
+// Online is the default for any language that has one; the setting can turn it off.
+const onlineOn=id=>{const l=L(id);return !!(l&&l.ayah&&(S.online||{})[id]!==false)};
+// A bundled recitation counts as recitable even when the online toggle is off,
+// since it needs no internet at all.
+const hasRecite=lg=>!!(lg.audio||bundled(lg.id)||onlineOn(lg.id));
+function sanitize(){
+  if(typeof S.show==='string')S.show=[S.show];
+  if(typeof S.listen==='string')S.listen=[S.listen];
+  for(const k of ['show','listen']){
+    S[k]=[...new Set((S[k]||[]).filter(id=>langs().some(l=>l.id===id)))].slice(0,2);
+    if(!S[k].length)S[k]=['ar'];
+  }
+}
+sanitize();
+// Arabic always comes first (primary); otherwise the order the person picked them in
+const order=ids=>[...ids.filter(i=>i==='ar'),...ids.filter(i=>i!=='ar')];
+const showL=()=>order(S.show).map(L);
+const listenIds=()=>order(S.listen);
+function pick(key,id){                       // toggle a language: 1 to 2 allowed
+  const a=S[key],i=a.indexOf(id);
+  if(i>=0){if(a.length===1){toast('Keep at least one language.');return false}a.splice(i,1);return true}
+  if(a.length>=2){                           // full: keep Arabic as primary, otherwise drop the oldest pick
+    const out=(id!=='ar'&&a.includes('ar'))?a.find(x=>x!=='ar'):a[0];
+    a.splice(a.indexOf(out),1);
+    toast(`Up to 2 languages. ${L(out).label} was replaced.`);
+  }
+  a.push(id);
+  return true;
+}
+let meta=store.get('qr.surahs',[]);
+const arDigits=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+function pageSurah(p){
+  let i=START.findIndex(s=>s===p);
+  if(i>=0)return i;
+  i=0;START.forEach((s,k)=>{if(s<p)i=k});return i;
+}
+
+/* ================= Theme ================= */
+const mq=matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(){
+  const eff=S.theme==='auto'?(mq.matches?'dark':'light'):S.theme;
+  document.documentElement.dataset.theme=eff;
+  $('meta[name=theme-color]').content=eff==='dark'?'#121214':'#fafaf9';
+}
+mq.addEventListener?.('change',applyTheme);
+function setScale(v,persist=true){
+  S.scale=Math.min(2.4,Math.max(.7,v));
+  document.documentElement.style.setProperty('--z',S.scale);
+  if(persist)save();
+}
+let toastT;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3000)}
+
+/* ================= Cache + fetch ================= */
+const mem=new Map();
+const dbp=new Promise(res=>{
+  try{
+    const r=indexedDB.open('quran-reader',2);
+    r.onupgradeneeded=()=>{const d=r.result;
+      if(!d.objectStoreNames.contains('p'))d.createObjectStore('p');
+      if(!d.objectStoreNames.contains('a'))d.createObjectStore('a');  // audio blobs
+      if(!d.objectStoreNames.contains('t'))d.createObjectStore('t');  // downloaded text
+    };
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>res(null);
+  }catch{res(null)}
+});
+async function cget(k){
+  if(mem.has(k))return mem.get(k);
+  const d=await dbp;if(!d)return null;
+  return new Promise(res=>{
+    try{const q=d.transaction('p').objectStore('p').get(k);
+      q.onsuccess=()=>{if(q.result)mem.set(k,q.result);res(q.result||null)};
+      q.onerror=()=>res(null);}catch{res(null)}
+  });
+}
+async function cset(k,v){
+  mem.set(k,v);
+  const d=await dbp;if(!d)return;
+  try{d.transaction('p','readwrite').objectStore('p').put(v,k)}catch{}
+}
+
+/* ---------- per-device asset downloads ----------
+   The server may or may not bundle the Quran text and recitations (the GitHub
+   copy ships without them; a personal copy usually has them). Whatever the
+   server has, a device can also download its own copy into this browser
+   (IndexedDB) so reading and listening work when the server is unreachable. */
+const AGETS={};                                    // in-flight download guards
+function dbGet(st,k){
+  return dbp.then(d=>d?new Promise(res=>{
+    try{const q=d.transaction(st).objectStore(st).get(k);
+      q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)}catch{res(null)}
+  }):null);
+}
+function dbSet(st,k,v){
+  return dbp.then(d=>{if(!d)return;
+    try{d.transaction(st,'readwrite').objectStore(st).put(v,k)}catch{}});
+}
+function dbDel(st,k){
+  return dbp.then(d=>{if(!d)return;
+    try{d.transaction(st,'readwrite').objectStore(st).delete(k)}catch{}});
+}
+function dbCount(st){
+  return dbp.then(d=>d?new Promise(res=>{
+    try{const q=d.transaction(st).objectStore(st).count();
+      q.onsuccess=()=>res(q.result||0);q.onerror=()=>res(0)}catch{res(0)}
+  }):Promise.resolve(0));
+}
+function dbKeys(st){
+  return dbp.then(d=>d?new Promise(res=>{
+    try{const q=d.transaction(st).objectStore(st).getAllKeys();
+      q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([])}catch{res([])}
+  }):Promise.resolve([]));
+}
+// Verse audio filename, same convention the server bundle uses.
+const avKey=(s,i)=>String(s).padStart(3,'0')+String(i).padStart(3,'0');
+
+/* Which content packs can be downloaded, and where from. */
+const PACKS=[
+  {id:'pages-ar', kind:'text', edition:'quran-uthmani', label:'Quran text — Arabic (Uthmani)', size:'~2.4 MB'},
+  {id:'pages-en', kind:'text', edition:'en.sahih',      label:'Quran text — English (Sahih Intl.)', size:'~2.4 MB'},
+  {id:'pages-ur', kind:'text', edition:'ur.jalandhry',  label:'Quran text — Urdu (Jalandhry)', size:'~2.4 MB'},
+  {id:'audio-ar', kind:'audio', id2:'ar', label:'Recitation — Arabic (Alafasy)', size:'~520 MB'},
+  {id:'audio-en', kind:'audio', id2:'en', label:'Recitation — English (Ibrahim Walk)', size:'~510 MB'},
+  {id:'audio-ur', kind:'audio', id2:'ur', label:'Recitation — Urdu (Shamshad Ali Khan)', size:'~500 MB'}
+];
+const packStatus={};                               // id -> {done, total}
+let currentPack=null;                              // pack id being downloaded (for cancel)
+
+async function dlPages(edition,onProg){
+  let ok=0;
+  for(let p=1;p<=604;p++){
+    const k=edition+'|'+p;
+    if(await dbGet('t',k)){ok++;continue}
+    try{
+      const v=await(await fetch(`${PDIR}${edition}/${p}.json`)).json();
+      if(Array.isArray(v)&&v.length){await dbSet('t',k,v);ok++}
+    }catch{}
+    onProg&&onProg(ok);
+    if(!AGETS[currentPack])break;                    // cancelled
+  }
+  return ok;
+}
+async function dlAudio(lang,onProg){
+  // Audio download needs the verse-per-page map; the Arabic page text carries it.
+  // Fetch page text straight from the server (no IDB round-trip needed).
+  let ok=0;
+  for(let p=1;p<=604;p++){
+    let ays=null;
+    try{ays=await(await fetch(`${PDIR}quran-uthmani/${p}.json`)).json()}catch{}
+    if(Array.isArray(ays)){
+      for(const a of ays){
+        if(!AGETS[currentPack])break;                // cancelled
+        const f=avKey(a.s,a.i);
+        if(await dbGet('a',lang+'/'+f))continue;
+        try{
+          const r=await fetch(`${LDIR}${lang}/${f}.mp3`);
+          if(r.ok){await dbSet('a',lang+'/'+f,await r.blob())}
+        }catch{}
+      }
+    }
+    ok=p;onProg&&onProg(p);
+    if(!AGETS[currentPack])break;
+  }
+  return ok;
+}
+async function localPage(p,e){                    // server bundle or this device's download
+  if(PAGED.indexOf(e)<0)return null;
+  const own=await dbGet('t',e+'|'+p);             // downloaded copy first (works offline)
+  if(own&&own.length&&own[0].t!==undefined)return own;
+  try{
+    const r=await fetch(`${PDIR}${e}/${p}.json`);
+    if(!r.ok)return null;
+    const v=await r.json();
+    return (v&&v.length&&v[0].t!==undefined)?v:null;
+  }catch{return null}
+}
+async function fetchEdition(p,e){
+  const local=await localPage(p,e);
+  if(local)return local;                          // bundled copy: offline + shared
+  const r=await fetch(`${API}/page/${p}/${e}`);
+  if(!r.ok)throw new Error(`HTTP ${r.status} for ${e}`);
+  const j=await r.json();
+  if(j.code!==200||!j.data||!j.data.ayahs)throw new Error(`API said ${j.code||'?'} for ${e}`);
+  const keys=Object.keys(j.data.surahs||{}).map(Number).sort((x,y)=>x-y);
+  let k=-1;
+  return j.data.ayahs.map(a=>{
+    if(a.numberInSurah===1||k<0)k++;
+    const s=a.surah?a.surah.number:(keys[Math.min(k,keys.length-1)]||0);
+    return{n:a.number,s,i:a.numberInSurah,t:a.text,r:a.ruku||0};
+  });
+}
+async function getPage(p,eds){
+  const out={};
+  await Promise.all(eds.map(async e=>{
+    const c=await cget(e+'|'+p);
+    if(c&&c.length&&c[0].r!==undefined){out[e]=c;return}      // up-to-date cache entry
+    let v;
+    try{v=await fetchEdition(p,e)}
+    catch(err){
+      if(c){out[e]=c;return}                                    // old cache entry still works offline
+      await sleep(600);v=await fetchEdition(p,e);
+    }
+    out[e]=v;cset(e+'|'+p,v);
+  }));
+  return out;
+}
+async function loadMeta(){
+  if(meta.length===114)return;
+  // Bundled metadata first: works with no internet.
+  if(!meta.length){
+    try{
+      const v=await (await fetch('assets/meta.json')).json();
+      if(Array.isArray(v)&&v.length===114&&v[0].verses!==undefined){
+        meta=v;
+        if(!$('#home').hidden&&tab==='surahs')renderPanel();
+      }
+    }catch{}
+  }
+  if(meta.length===114){
+    store.set('qr.surahs',meta);
+    return;
+  }
+  try{
+    const j=await (await fetch(API+'/surah')).json();
+    if(j.code===200){
+      meta=j.data.map(s=>({name:s.name.replace(/^سُورَةُ\s*/,''),verses:s.numberOfAyahs,type:s.revelationType}));
+      store.set('qr.surahs',meta);
+      if(!$('#home').hidden&&tab==='surahs')renderPanel();
+    }
+  }catch{}
+}
+
+/* ================= Dashboard ================= */
+let tab='surahs',q='';
+const panel=$('#panel');
+
+function row({num,title,sub,ar,pg,on}){
+  const b=document.createElement('button');b.className='row';
+  b.innerHTML=`<span class="num"><span></span></span><span class="t"><b></b><small></small></span><span><span class="ar"></span><span class="pg"></span></span>`;
+  b.querySelector('.num span').textContent=num;
+  b.querySelector('b').textContent=title;
+  b.querySelector('small').textContent=sub||'';
+  b.querySelector('.ar').textContent=ar||'';
+  b.querySelector('.pg').textContent=pg?'Page '+pg:'';
+  b.onclick=on;
+  const li=document.createElement('li');li.append(b);return li;
+}
+function renderHome(){
+  const i=pageSurah(S.last);
+  $('#contT').textContent=`${i+1}. ${NAMES[i]}`;
+  $('#contS').textContent=`Continue on page ${S.last} of 604`;
+  $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));
+  renderPanel();
+}
+function renderPanel(){
+  if(tab==='surahs')panelSurahs();
+  else if(tab==='juz')panelJuz();
+  else if(tab==='marks')panelMarks();
+  else panelSettings();
+}
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
+function panelSurahs(){
+  panel.innerHTML='<input class="search" id="q" placeholder="Search by name or number" autocomplete="off"><ul class="list" id="list"></ul>';
+  const inp=$('#q');inp.value=q;
+  const fill=()=>{
+    const v=q.trim(),ul=$('#list');ul.innerHTML='';
+    NAMES.forEach((n,i)=>{
+      const m=meta[i];
+      if(v&&!(norm(n).includes(norm(v))||String(i+1)===v||(m&&m.name.includes(v))))return;
+      ul.append(row({num:i+1,title:n,sub:m?`${m.type}, ${m.verses} verses`:'',ar:m?m.name:'',pg:START[i],on:()=>openReader(START[i])}));
+    });
+    if(!ul.children.length)ul.innerHTML='<li class="empty">No surah matches that search.</li>';
+  };
+  inp.oninput=()=>{q=inp.value;fill()};
+  fill();
+}
+function panelJuz(){
+  panel.innerHTML='<ul class="list" id="list"></ul>';
+  JUZ.forEach((p,i)=>$('#list').append(row({num:i+1,title:'Juz '+(i+1),sub:'Starts in '+NAMES[pageSurah(p)],ar:'الجزء '+arDigits(i+1),pg:p,on:()=>openReader(p)})));
+}
+function panelMarks(){
+  panel.innerHTML='<ul class="list" id="list"></ul>';
+  if(!S.marks.length){$('#list').innerHTML='<li class="empty">No bookmarks yet. While reading, press and hold anywhere on the page to bookmark it.</li>';return}
+  [...S.marks].sort((a,b)=>a-b).forEach(p=>{
+    const li=row({num:p,title:'Page '+p,sub:NAMES[pageSurah(p)],pg:'',on:()=>openReader(p)});
+    const x=document.createElement('button');x.className='link';x.textContent='Remove';x.setAttribute('aria-label','Remove bookmark for page '+p);
+    x.onclick=e=>{e.stopPropagation();S.marks=S.marks.filter(m=>m!==p);save();panelMarks()};
+    li.style.display='flex';li.style.alignItems='center';li.append(x);
+    $('#list').append(li);
+  });
+}
+
+/* language chips shared by Settings and the reading sheet */
+const chipText=l=>l.custom?l.label:(l.native||l.label);
+function langChips(key,onChange){
+  const seg=document.createElement('div');seg.className='seg';
+  langs().forEach(l=>{
+    const b=document.createElement('button');b.className='chip';b.textContent=chipText(l);
+    b.setAttribute('aria-pressed',S[key].includes(l.id));
+    b.onclick=()=>{if(pick(key,l.id)){save();onChange()}};
+    seg.append(b);
+  });
+  return seg;
+}
+
+let dl=null;
+async function panelSettings(){
+  panel.innerHTML='';
+  const g=h=>{const d=document.createElement('div');d.className='grp';d.innerHTML=`<h3>${h}</h3>`;panel.append(d);return d};
+  const note=(d,t)=>{const p=document.createElement('p');p.className='note';p.textContent=t;d.append(p)};
+
+  let d=g('Theme');
+  let seg=document.createElement('div');seg.className='seg';d.append(seg);
+  [['light','Light'],['dark','Dark'],['auto','Match device']].forEach(([v,t])=>{
+    const b=document.createElement('button');b.className='chip';b.textContent=t;b.setAttribute('aria-pressed',S.theme===v);
+    b.onclick=()=>{S.theme=v;save();applyTheme();panelSettings()};seg.append(b);
+  });
+
+  d=g('Read in');
+  d.append(langChips('show',panelSettings));
+  note(d,'Pick up to 2. Arabic always comes first. The other language appears under each paragraph as its translation.');
+  const add=document.createElement('button');add.className='link';add.textContent='Add a language';add.onclick=addLangModal;d.append(add);
+  S.custom.forEach(l=>{
+    const r=document.createElement('div');r.className='lrow';
+    r.innerHTML='<span class="n"></span>';r.firstChild.textContent=l.label;
+    const rm=document.createElement('button');rm.className='link';rm.textContent='Remove';
+    rm.onclick=()=>{
+      if(!confirm(`Remove ${l.label} from your languages?`))return;
+      S.custom=S.custom.filter(x=>x.id!==l.id);sanitize();save();panelSettings();
+    };
+    r.append(rm);d.append(r);
+  });
+
+  d=g('Listen in');
+  d.append(langChips('listen',panelSettings));
+  note(d,'Pick up to 2. For each paragraph, the first plays, then the second plays for the same paragraph. Arabic always uses a recitation; translations can use a recorded recitation or your device voice.');
+  // Per-language switch between a recorded recitation and the device voice.
+  langs().filter(l=>l.ayah).forEach(l=>{
+    const on=onlineOn(l.id);
+    const local=bundled(l.id);   // bundled = served from the app itself, no internet needed
+    const row=document.createElement('div');row.className='lrow';
+    row.innerHTML='<span class="n"></span>';
+    row.firstChild.textContent=l.label+' recitation';
+    const seg=document.createElement('div');seg.className='seg';
+    [[local?'Recitation':'Online',true],['Device voice',false]].forEach(([lbl,val])=>{
+      const b=document.createElement('button');b.className='chip';b.textContent=lbl;
+      b.setAttribute('aria-pressed',on===val);
+      b.onclick=()=>{S.online=S.online||{};S.online[l.id]=val;save();panelSettings()};
+      seg.append(b);
+    });
+    row.append(seg);d.append(row);
+    const pn=document.createElement('p');pn.className='note';
+    pn.textContent=local
+      ?'“Recitation” plays a recorded recitation of the '+l.label+' translation, included with this app (works offline, no internet needed). “Device voice” uses your device text-to-speech, which also works offline but sounds less natural.'
+      :'“Online” plays a recorded recitation of the '+l.label+' translation (needs internet). “Device voice” uses your device text-to-speech, which works offline but sounds less natural.';
+    d.append(pn);
+  });
+
+  d=g('Text size');
+  const rg=document.createElement('input');rg.type='range';rg.min=.7;rg.max=2.4;rg.step=.05;rg.value=S.scale;
+  rg.setAttribute('aria-label','Text size');rg.oninput=()=>setScale(+rg.value);d.append(rg);
+  note(d,'You can also pinch to zoom while reading.');
+
+  d=g('Page turning');
+  seg=document.createElement('div');seg.className='seg';d.append(seg);
+  [['left','Swipe left for next page'],['right','Swipe right for next page']].forEach(([v,t])=>{
+    const b=document.createElement('button');b.className='chip';b.textContent=t;b.setAttribute('aria-pressed',S.swipe===v);
+    b.onclick=()=>{S.swipe=v;save();panelSettings()};seg.append(b);
+  });
+
+  d=g('Downloads on this device');
+  const dnote=document.createElement('p');dnote.className='note';
+  dnote.textContent='This app works fully offline. The server may already include the Quran text and recitations — if it does, you can read and listen right away. You can also save your own copy on this device, so they keep working even when this server is off.';
+  d.append(dnote);
+  const refreshDl=()=>{panelSettings()};
+  const saved=new Set();
+  for(const pk of PACKS){if(await dbGet('p','dl-'+pk.id))saved.add(pk.id)}
+  PACKS.forEach(pk=>{
+    const r=document.createElement('div');r.className='lrow';
+    const name=document.createElement('span');name.className='n';name.textContent=`${pk.label} (${pk.size})`;
+    const seg=document.createElement('div');seg.className='seg';
+    const st=packStatus[pk.id];
+    const btn=document.createElement('button');btn.className='chip';
+    const doneKey=pk.kind==='text'?pk.edition+'|done':null;
+    btn.textContent=st?'…':(AGETS[pk.id]?'Stop':'Save');
+    btn.setAttribute('aria-pressed',false);
+    const prog=document.createElement('span');prog.className='note';prog.style.marginLeft='8px';
+    const run=async()=>{
+      if(AGETS[pk.id]){delete AGETS[pk.id];currentPack=null;panelSettings();return}   // cancel
+      AGETS[pk.id]=true;currentPack=pk.id;panelSettings();
+      const on=n=>{packStatus[pk.id]={done:n,total:pk.kind==='text'?604:604};
+        const el=$('#dlprog-'+pk.id);if(el)el.textContent=`${n} / 604`};
+      if(pk.kind==='text')await dlPages(pk.edition,on);else await dlAudio(pk.id2,on);
+      const cancelled=!AGETS[pk.id]&&currentPack!==pk.id;   // user pressed Stop
+      delete AGETS[pk.id];if(currentPack===pk.id)currentPack=null;delete packStatus[pk.id];
+      if(cancelled){toast('Download stopped.');panelSettings();return}
+      await dbSet('p','dl-'+pk.id,1);            // mark complete only if it ran to the end
+      toast(pk.label+' saved on this device.');panelSettings();
+    };
+    btn.onclick=run;
+    if(saved.has(pk.id)&&!AGETS[pk.id])btn.textContent='Saved ✓';
+    seg.append(btn);
+    prog.id='dlprog-'+pk.id;
+    prog.textContent=st?`${st.done} / 604`:'';
+    r.append(name,seg);d.append(r);
+  });
+  const dnote2=document.createElement('p');dnote2.className='note';
+  dnote2.textContent='Recitations are large (about half a gigabyte each). Text packs are a few megabytes. Saved copies live only in this browser.';
+  d.append(dnote2);
+  const dclear=document.createElement('button');dclear.className='link';dclear.textContent='Remove all saved copies from this device';
+  dclear.onclick=async()=>{
+    if(!confirm('Delete all downloaded pages and recitations from this device? The server copy (if any) is not affected.'))return;
+    const ks=await dbKeys('t');for(const k of ks)await dbDel('t',k);
+    const as=await dbKeys('a');for(const k of as)await dbDel('a',k);
+    for(const pk of PACKS)await dbDel('p','dl-'+pk.id);
+    mem.clear();toast('Saved copies removed.');panelSettings();
+  };
+  d.append(dclear);
+
+  d=g('Offline and backup');
+  const ob=document.createElement('button');ob.className='chip';ob.textContent=dl?'Stop download':'Download all pages';
+  const os=document.createElement('p');os.className='note';os.id='dlnote';
+  os.textContent='Fetches all 604 pages in the languages you picked above into this device\u2019s storage so you can read without the server. Use the Downloads section above to save recitations too.';
+  ob.onclick=()=>downloadAll(ob);
+  const bar=document.createElement('div');bar.className='seg';bar.style.marginTop='10px';
+  const ex=document.createElement('button');ex.className='chip';ex.textContent='Export to file';ex.onclick=exportData;
+  const im=document.createElement('button');im.className='chip';im.textContent='Import from file';
+  const fi=document.createElement('input');fi.type='file';fi.accept='.json,application/json';fi.hidden=true;
+  fi.onchange=()=>{if(fi.files[0])importData(fi.files[0]);fi.value=''};
+  im.onclick=()=>fi.click();
+  bar.append(ex,im,fi);
+  const es=document.createElement('p');es.className='note';
+  es.textContent='Export saves every downloaded page, your bookmarks, and your settings into one file. Import merges a backup into this device without deleting anything.';
+  d.append(ob,os,bar,es);
+}
+async function downloadAll(btn){
+  if(dl){dl.stop=true;return}
+  const eds=[...new Set([...S.show,...S.listen].map(id=>L(id).edition))];
+  dl={stop:false};btn.textContent='Stop download';
+  const pages=Array.from({length:604},(_,i)=>i+1);let done=0,fail=0,lastErr='';
+  const note=()=>{const n=$('#dlnote');if(n)n.textContent=`Saved ${done} of 604 pages${fail?`, ${fail} failed (${lastErr})`:''}.`};
+  const worker=async()=>{
+    while(pages.length&&!dl.stop){
+      const p=pages.shift();
+      try{await getPage(p,eds);done++}catch(err){fail++;lastErr=String(err&&err.message||err)}
+      note();
+    }
+  };
+  await Promise.all([worker(),worker(),worker()]);
+  const stopped=dl.stop;dl=null;
+  toast(stopped?'Download stopped.':fail?`Finished with ${fail} failed pages. Run it again to retry.`:'All pages saved for offline.');
+  if(tab==='set')panelSettings();
+}
+
+/* export / import */
+async function allCache(){
+  const d=await dbp;
+  if(!d)return Object.fromEntries(mem);
+  return new Promise(res=>{
+    const out={};
+    try{
+      const q=d.transaction('p').objectStore('p').openCursor();
+      q.onsuccess=()=>{const c=q.result;if(c){out[c.key]=c.value;c.continue()}else res(out)};
+      q.onerror=()=>res(Object.fromEntries(mem));
+    }catch{res(Object.fromEntries(mem))}
+  });
+}
+async function exportData(){
+  toast('Preparing backup...');
+  try{
+    const pages=await allCache();
+    const n=Object.keys(pages).length;
+    const blob=new Blob([JSON.stringify({app:'quran-reader',v:2,state:S,meta,pages})],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`quran-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),10000);
+    toast(n?`Exported ${n} saved pages.`:'Exported settings only. No pages are downloaded yet.');
+  }catch(err){toast('Export failed: '+(err&&err.message||err))}
+}
+async function importData(file){
+  try{
+    const j=JSON.parse(await file.text());
+    if(j.app!=='quran-reader'||!j.pages)throw new Error('This is not a Quran Reader backup.');
+    const keys=Object.keys(j.pages);
+    const d=await dbp;
+    if(d&&keys.length){
+      await new Promise((res,rej)=>{
+        const tx=d.transaction('p','readwrite'),st=tx.objectStore('p');
+        keys.forEach(k=>st.put(j.pages[k],k));
+        tx.oncomplete=res;tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error);
+      });
+    }
+    keys.forEach(k=>mem.set(k,j.pages[k]));
+    if(j.state&&confirm('Also restore bookmarks, languages and settings from this backup? Your current settings will be replaced.')){
+      const cur=S.last,oldMarks=store.get('qr.state',{}).marks||[];
+      S=Object.assign({},S,j.state);
+      S.marks=[...new Set([...(j.state.marks||[]),...oldMarks])];
+      S.custom=j.state.custom||[];
+      if(!j.state.last)S.last=cur;
+      sanitize();save();applyTheme();setScale(S.scale,false);renderHome();
+    }
+    if(Array.isArray(j.meta)&&j.meta.length===114&&meta.length!==114){meta=j.meta;store.set('qr.surahs',meta)}
+    toast(`Imported ${keys.length} pages.`);
+    if(tab==='set')panelSettings();
+  }catch(err){toast('Import failed: '+(err&&err.message||err))}
+}
+
+/* add-language modal */
+let editionList=null,ovAt=0;
+async function addLangModal(){
+  const ov=$('#overlay');ov.className='scrim modal';ov.hidden=false;ovAt=Date.now();
+  ov.innerHTML='<div class="sheet" role="dialog" aria-label="Add a language"><h3>Add a language</h3><input class="search" id="lq" placeholder="Search language or translator" autocomplete="off"><div id="ll"><p class="empty">Loading translations...</p></div></div>';
+  ov.onclick=e=>{if(e.target===ov)closeOverlay()};
+  try{
+    if(!editionList){
+      // Bundled list first; fall back to the live API for the freshest set.
+      let v=null;
+      try{v=await (await fetch('assets/editions.json')).json()}catch{}
+      editionList=Array.isArray(v)?v:null;
+      if(!editionList){
+        const j=await (await fetch(API+'/edition?format=text&type=translation')).json();
+        editionList=j.data;
+      }
+    }
+  }catch{$('#ll').innerHTML='<p class="empty">Could not load the list. Check your internet connection.</p>';return}
+  const fill=()=>{
+    const v=$('#lq').value.trim().toLowerCase();
+    const box=$('#ll');box.innerHTML='';
+    editionList.filter(e=>!langs().some(l=>l.id===e.identifier)&&(!v||[e.language,e.name,e.englishName,e.identifier].join(' ').toLowerCase().includes(v)))
+      .slice(0,80).forEach(e=>{
+        const b=document.createElement('button');b.className='row';
+        b.innerHTML='<span class="t"><b></b><small></small></span>';
+        b.querySelector('b').textContent=e.englishName||e.name;
+        b.querySelector('small').textContent=`${e.language.toUpperCase()}, ${e.name}`;
+        b.onclick=()=>{
+          S.custom.push({id:e.identifier,label:`${e.englishName||e.name} (${e.language})`,native:e.name,edition:e.identifier,dir:e.direction||'ltr',tts:e.language,code:e.language,custom:true});
+          pick('show',e.identifier);save();closeOverlay();if(tab==='set')panelSettings();toast('Language added.');
+        };
+        box.append(b);
+      });
+    if(!box.children.length)box.innerHTML='<p class="empty">Nothing matches that search.</p>';
+  };
+  $('#lq').oninput=fill;fill();
+}
+function closeOverlay(){const ov=$('#overlay');ov.hidden=true;ov.innerHTML='';ov.onclick=null}
+
+/* ================= Reader ================= */
+const reader=$('#reader'),stage=$('#stage'),pageEl=$('#page');
+let curData={},curIdx={},paras=[],seq=0;
+
+function clean(a,lg){
+  let t=a.t;
+  if(lg.code==='ar'&&a.i===1&&a.s!==1&&a.s!==9){
+    const plain=t.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,'');
+    const w=t.split(' ');
+    if(plain.startsWith('بسم')&&w.length>4)t=w.slice(4).join(' ');
+  }
+  return t;
+}
+function buildParas(list){
+  const out=[];let cur=null,chars=0,prevR=0;
+  list.forEach(a=>{
+    const start=a.i===1;
+    if(!cur||start||(a.r&&prevR&&a.r!==prevR)||cur.ays.length>=MAX_AYAHS||(chars+a.t.length>MAX_CHARS&&cur.ays.length)){
+      cur={ays:[],head:start?a.s:0};out.push(cur);chars=0;
+    }
+    cur.ays.push(a);chars+=a.t.length;prevR=a.r||prevR;
+  });
+  return out;
+}
+async function showPage(p,anim,keep){
+  const my=++seq;
+  S.last=p;save();
+  const eds=[...new Set([...S.show,...S.listen].map(id=>L(id).edition))];
+  let data;
+  try{data=await getPage(p,eds)}
+  catch(err){
+    if(my!==seq)return false;
+    pageEl.className='';
+    $('#toppage').textContent=p+' / 604';
+    $('#toptxt').textContent=NAMES[pageSurah(p)]||'';
+    pageEl.innerHTML='<div class="msg">This page could not be loaded.<br><small id="why"></small><br><button id="retry">Try again</button></div>';
+    $('#why').textContent=String(err&&err.message||err);
+    $('#retry').onclick=()=>showPage(p);
+    return false;
+  }
+  if(my!==seq)return false;
+  const y=stage.scrollTop;
+  curData=data;curIdx={};
+  for(const e in data){curIdx[e]={};data[e].forEach(x=>{curIdx[e][x.n]=x})}
+  const shown=showL();
+  const base=data[shown[0].edition]||Object.values(data)[0];
+  paras=buildParas(base);
+  const hasAr=shown.some(l=>l.code==='ar');
+  pageEl.className='';pageEl.innerHTML='';
+  paras.forEach((pa,pi)=>{
+    if(pa.head){
+      const h=document.createElement('div');h.className='sh';
+      const m=meta[pa.head-1];
+      h.innerHTML='<div class="a"></div><div class="e"></div>';
+      h.firstChild.textContent=m?m.name:'';h.lastChild.textContent=NAMES[pa.head-1]||'';
+      if(!m)h.firstChild.remove();
+      pageEl.append(h);
+      if(hasAr&&pa.head!==1&&pa.head!==9){const b=document.createElement('p');b.className='bism';b.textContent='بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';pageEl.append(b)}
+    }
+    const art=document.createElement('article');art.className='para';art.dataset.pi=pi;
+    shown.forEach((lg,bi)=>{
+      const blk=document.createElement('p');blk.className='blk'+(bi?' tr':'');
+      blk.dir=lg.dir;blk.lang=lg.code;blk.dataset.l=lg.code;blk.dataset.lang=lg.id;
+      pa.ays.forEach((a,ai)=>{
+        const item=curIdx[lg.edition]&&curIdx[lg.edition][a.n];if(!item)return;
+        const sp=document.createElement('span');sp.className='ay';sp.dataset.pi=pi;sp.dataset.ai=ai;
+        if(lg.code==='ar'){
+          sp.append(document.createTextNode(clean(item,lg)));
+          const v=document.createElement('span');v.className='vn';v.textContent=' ﴿'+arDigits(a.i)+'﴾';sp.append(v);
+        }else{
+          const no=document.createElement('span');no.className='no';no.textContent=lg.dir==='rtl'?arDigits(a.i):a.i;
+          sp.append(no,document.createTextNode(item.t));
+        }
+        blk.append(sp,document.createTextNode(' '));
+      });
+      art.append(blk);
+    });
+    pageEl.append(art);
+  });
+  $('#toppage').textContent=p+' / 604';
+  $('#toptxt').textContent=NAMES[(base[0]&&base[0].s||pageSurah(p)+1)-1]||'';
+  stage.scrollTop=keep?y:0;
+  if(anim){void pageEl.offsetWidth;pageEl.classList.add(anim==='next'?'sn':'sp')}
+  [p+1,p-1].forEach(n=>{if(n>=1&&n<=604)getPage(n,eds).catch(()=>{})});
+  return true;
+}
+function go(d){
+  const p=S.last+d;
+  if(p<1||p>604){toast(p<1?'This is the first page.':'This is the last page.');return}
+  const was=P.state==='playing';
+  stopAudio();
+  showPage(p,d>0?'next':'prev').then(ok=>{if(ok&&was)play({pi:0,li:0,ai:0,t:0})});
+}
+function openReader(p){
+  S.last=p;save();
+  $('#home').hidden=true;reader.hidden=false;
+  history.pushState({r:1},'');
+  showPage(p);
+  if(!S.hint){S.hint=1;save();setTimeout(()=>toast('Swipe to turn pages. Pinch to zoom. Press and hold for options.'),600)}
+}
+function closeReader(){
+  stopAudio();reader.hidden=true;$('#home').hidden=false;closeOverlay();renderHome();
+}
+$('#topname').onclick=()=>{if(!reader.hidden){closeOverlay();history.back()}};
+addEventListener('popstate',()=>{if(!reader.hidden)closeReader()});
+
+/* ---------- gestures ---------- */
+const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+let t0=null,pinch=null,lp=null;
+const stopLP=()=>{clearTimeout(lp);lp=null};
+stage.addEventListener('touchstart',e=>{
+  if(e.touches.length===2){pinch={d:dist(e.touches),s:S.scale};t0=null;stopLP()}
+  else if(e.touches.length===1&&!pinch){
+    t0={x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now()};
+    stopLP();lp=setTimeout(()=>{if(t0){t0=null;openSheet()}},550);
+  }
+},{passive:true});
+stage.addEventListener('touchmove',e=>{
+  if(pinch&&e.touches.length===2){e.preventDefault();setScale(pinch.s*dist(e.touches)/pinch.d,false)}
+  else if(t0&&Math.hypot(e.touches[0].clientX-t0.x,e.touches[0].clientY-t0.y)>10)stopLP();
+},{passive:false});
+stage.addEventListener('touchend',e=>{
+  stopLP();
+  if(pinch){if(e.touches.length<2){pinch=null;save()}return}
+  if(!t0)return;
+  const c=e.changedTouches[0],dx=c.clientX-t0.x,dy=c.clientY-t0.y;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.6&&Date.now()-t0.t<800){
+    const next=S.swipe==='left'?dx<0:dx>0;go(next?1:-1);
+  }
+  t0=null;
+},{passive:true});
+stage.addEventListener('touchcancel',()=>{t0=null;pinch=null;stopLP()},{passive:true});
+stage.addEventListener('dblclick',()=>{if(matchMedia('(pointer:fine)').matches)openSheet()});
+stage.addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();setScale(S.scale*(e.deltaY<0?1.06:.94))}},{passive:false});
+// while audio is playing or paused, tap any line or word to continue from there
+stage.addEventListener('click',e=>{
+  const sp=e.target.closest&&e.target.closest('.ay');
+  if(!sp||P.state==='idle')return;
+  const ids=listenIds();
+  let li=ids.indexOf(sp.parentElement.dataset.lang);if(li<0)li=0;
+  play({pi:+sp.dataset.pi,li,ai:+sp.dataset.ai,t:0});
+});
+addEventListener('keydown',e=>{
+  if(!$('#overlay').hidden){if(e.key==='Escape')closeOverlay();return}
+  if(reader.hidden)return;
+  if(e.key==='Escape')history.back();
+  else if(e.key==='ArrowLeft')go(S.swipe==='left'?1:-1);
+  else if(e.key==='ArrowRight')go(S.swipe==='left'?-1:1);
+  else if(e.key==='+'||e.key==='=')setScale(S.scale+.1);
+  else if(e.key==='-')setScale(S.scale-.1);
+  else if(e.key===' '){e.preventDefault();toggleAudio()}
+});
+
+/* ---------- options sheet (press and hold) ---------- */
+function openSheet(){
+  const ov=$('#overlay');ov.className='scrim';ov.hidden=false;ovAt=Date.now();
+  const build=()=>{
+    ov.innerHTML='<div class="sheet" role="dialog" aria-label="Reading options"></div>';
+    const sh=ov.firstChild;
+    const h=t=>{const e=document.createElement('h3');e.textContent=t;sh.append(e)};
+    const seg=()=>{const d=document.createElement('div');d.className='seg';sh.append(d);return d};
+    const chip=(d,t,fn)=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.onclick=fn;d.append(b)};
+    const langChange=()=>{stopAudio();build();showPage(S.last,null,true)};
+
+    h('Page '+S.last);
+    let d=seg();
+    chip(d,'Dashboard',()=>{closeOverlay();history.back()});
+    const marked=S.marks.includes(S.last);
+    chip(d,marked?'Remove bookmark':'Bookmark page',()=>{
+      S.marks=marked?S.marks.filter(m=>m!==S.last):[...S.marks,S.last];save();toast(marked?'Bookmark removed.':'Page bookmarked.');build();
+    });
+    chip(d,document.documentElement.dataset.theme==='dark'?'Light theme':'Dark theme',()=>{
+      S.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';save();applyTheme();build();
+    });
+    if(P.state!=='idle')chip(d,'Stop audio',()=>{stopAudio();closeOverlay()});
+    h('Read in');sh.append(langChips('show',langChange));
+    h('Listen in');sh.append(langChips('listen',langChange));
+  };
+  build();
+  ov.onclick=e=>{if(e.target===ov&&Date.now()-ovAt>350)closeOverlay()};
+}
+
+/* ================= Audio ================= */
+// P.pi/li/ai = current paragraph / language step / ayah. P.t = seconds (recitation) or character offset (device voice).
+const P={state:'idle',tok:0,pi:0,li:0,ai:0,t:0,abort:null};
+let curAudio=null;
+const alive=tok=>P.tok===tok&&P.state==='playing';
+function setAudioUI(){
+  document.body.dataset.audio=P.state;
+  $('#spk').setAttribute('aria-label',P.state==='playing'?'Pause audio':P.state==='paused'?'Resume audio':'Play audio');
+  try{navigator.mediaSession&&(navigator.mediaSession.playbackState=P.state==='playing'?'playing':P.state==='paused'?'paused':'none')}catch{}
+}
+function abortCur(){
+  try{speechSynthesis.cancel()}catch{}
+  if(curAudio){curAudio.pause();curAudio=null}
+  if(P.abort){const a=P.abort;P.abort=null;a()}
+}
+function clearHL(){$$('.ay.on').forEach(x=>x.classList.remove('on'))}
+function hl(pi,li,ai){
+  clearHL();
+  const art=pageEl.querySelector(`.para[data-pi="${pi}"]`);if(!art)return;
+  const id=listenIds()[li];
+  const blk=$$('.blk',art).find(b=>b.dataset.lang===id)||art.querySelector('.blk');
+  const el=blk&&blk.querySelector(`.ay[data-ai="${ai}"]`);if(!el)return;
+  el.classList.add('on');
+  const r=el.getBoundingClientRect();
+  if(r.top<80||r.bottom>innerHeight-50)stage.scrollBy({top:r.top-innerHeight*.3,behavior:'smooth'});
+}
+function stopAudio(){
+  P.state='idle';P.tok++;abortCur();clearHL();setAudioUI();
+}
+function pause(){
+  if(P.state!=='playing')return;
+  if(curAudio)P.t=curAudio.currentTime||P.t;
+  P.state='paused';P.tok++;abortCur();setAudioUI();
+}
+function firstVisible(){
+  const arts=$$('.para',pageEl);
+  for(let i=0;i<arts.length;i++)if(arts[i].getBoundingClientRect().bottom>90)return{pi:+arts[i].dataset.pi,li:0,ai:0,t:0};
+  return{pi:0,li:0,ai:0,t:0};
+}
+function toggleAudio(){
+  if(P.state==='playing')pause();
+  else if(P.state==='paused')play({pi:P.pi,li:P.li,ai:P.ai,t:P.t});
+  else{
+    play(firstVisible());
+    if(!S.hint2){S.hint2=1;save();setTimeout(()=>toast('Tap any line while audio is on to play from there.'),400)}
+  }
+}
+function tts(text,lang,start){
+  return new Promise(res=>{
+    if(!('speechSynthesis' in window)){toast('This browser cannot read text aloud.');return res(false)}
+    const base=lang.split('-')[0].toLowerCase();
+    const voices=speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang.replace('_','-').toLowerCase()===lang.toLowerCase())||voices.find(v=>v.lang.toLowerCase().startsWith(base));
+    if(!v&&voices.length){toast('No voice for this language is installed. Add one in your device text-to-speech settings.');return res(false)}
+    const u=new SpeechSynthesisUtterance(text.slice(start||0));u.lang=lang;if(v)u.voice=v;u.rate=.92;
+    u.onboundary=e=>{if(typeof e.charIndex==='number')P.t=(start||0)+e.charIndex};
+    u.onend=()=>res(true);
+    u.onerror=e=>res(e.error==='interrupted'||e.error==='canceled');
+    P.abort=()=>res(true);
+    speechSynthesis.speak(u);
+  });
+}
+// Queue every remaining verse of the paragraph at once, so the voice engine moves straight from one
+// verse to the next instead of restarting for each one (that restart is what caused the pauses).
+function ttsStep(pa,lg,ai0,t,tok){
+  return new Promise(res=>{
+    if(!('speechSynthesis' in window)){toast('This browser cannot read text aloud.');return res(false)}
+    const lang=lg.tts,base=lang.split('-')[0].toLowerCase();
+    const voices=speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang.replace('_','-').toLowerCase()===lang.toLowerCase())||voices.find(v=>v.lang.toLowerCase().startsWith(base));
+    if(!v&&voices.length){toast('No voice for this language is installed. Add one in your device text-to-speech settings.');return res(false)}
+    const items=[];
+    pa.ays.forEach((a,k)=>{if(k>=ai0){const it=curIdx[lg.edition]&&curIdx[lg.edition][a.n];if(it)items.push([k,clean(it,lg)])}});
+    if(!items.length)return res(true);
+    let failed=false;
+    P.abort=()=>res(true);
+    items.forEach(([k,text],idx)=>{
+      const start=k===ai0?t:0;
+      const u=new SpeechSynthesisUtterance(text.slice(start));u.lang=lang;if(v)u.voice=v;u.rate=.92;
+      u.onstart=()=>{if(P.tok!==tok||P.state!=='playing')return;P.ai=k;P.t=start;hl(P.pi,P.li,k)};
+      u.onboundary=e=>{if(P.tok===tok&&typeof e.charIndex==='number'&&P.ai===k)P.t=start+e.charIndex};
+      u.onerror=e=>{if(e.error!=='interrupted'&&e.error!=='canceled'&&!failed){failed=true;res(false)}};
+      if(idx===items.length-1)u.onend=()=>res(true);
+      speechSynthesis.speak(u);
+    });
+  });
+}
+function mp3(url,t){
+  return new Promise((res,rej)=>{
+    const a=new Audio(url);curAudio=a;a.preload='auto';
+    if(t>0)a.addEventListener('loadedmetadata',()=>{try{a.currentTime=t}catch{}},{once:true});
+    a.ontimeupdate=()=>{P.t=a.currentTime};
+    P.abort=()=>res(true);
+    a.onended=()=>res(true);a.onerror=()=>rej(new Error('audio'));
+    a.play().catch(rej);
+  });
+}
+// Play a verse from this device's downloaded copy (IndexedDB blob), or null.
+async function mp3Local(lang,s,i,t){
+  const blob=await dbGet('a',lang+'/'+avKey(s,i));
+  if(!blob)return null;
+  const url=URL.createObjectURL(blob);
+  try{return await mp3(url,t)}finally{setTimeout(()=>URL.revokeObjectURL(url),3e4)}
+}
+async function speakAyah(a,lg,t){
+  if(lg.audio){
+    // This device's download first, then the server's bundle, then the CDN.
+    if(a.s&&a.i){
+      try{const r=await mp3Local(lg.id,a.s,a.i,t);if(r!==null)return r}catch{}
+      if(bundled(lg.id)){
+        try{return await mp3(`${LDIR}${lg.id}/${avKey(a.s,a.i)}.mp3`,t)}catch{}
+      }
+    }
+    try{return await mp3(`${AUDIO}${lg.audio}/${a.n}.mp3`,t)}
+    catch{if(P.state!=='playing')return true;toast('Recitation audio could not load. Using device voice.');t=0}
+  }
+  else if(onlineOn(lg.id)&&a.s&&a.i){
+    // Translation recitation: device download, then server bundle, then everyayah.com.
+    try{const r=await mp3Local(lg.id,a.s,a.i,t);if(r!==null)return r}catch{}
+    if(bundled(lg.id)){
+      try{return await mp3(`${LDIR}${lg.id}/${avKey(a.s,a.i)}.mp3`,t)}catch{}
+    }
+    try{return await mp3(`${AYAH}${lg.ayah}/${avKey(a.s,a.i)}.mp3`,t)}
+    catch{if(P.state!=='playing')return true;toast('Recitation audio could not load. Using device voice.');t=0}
+  }
+  const item=curIdx[lg.edition]&&curIdx[lg.edition][a.n];
+  return item?tts(clean(item,lg),lg.tts,t):true;
+}
+// Order: paragraph 1 in the first language, then paragraph 1 in the second language, then paragraph 2, and so on.
+async function play(pos){
+  abortCur();
+  const tok=++P.tok;P.state='playing';setAudioUI();
+  await sleep(60);if(!alive(tok))return;
+  const ids=listenIds();
+  let{pi,li,ai,t}=pos;
+  li=Math.min(li,ids.length-1);
+  for(;;){
+    for(;pi<paras.length;pi++){
+      for(;li<ids.length;li++){
+        const lg=L(ids[li]),pa=paras[pi];
+        if(!hasRecite(lg)){
+          if(!alive(tok))return;
+          P.pi=pi;P.li=li;P.ai=ai;P.t=t;
+          hl(pi,li,ai);
+          const ok=await ttsStep(pa,lg,ai,t,tok);
+          t=0;
+          if(!alive(tok))return;
+          if(ok===false){stopAudio();return}
+          ai=0;continue;
+        }
+        for(;ai<pa.ays.length;ai++){
+          if(!alive(tok))return;
+          P.pi=pi;P.li=li;P.ai=ai;P.t=t;
+          hl(pi,li,ai);
+          const ok=await speakAyah(pa.ays[ai],lg,t);
+          t=0;
+          if(!alive(tok))return;
+          if(ok===false){stopAudio();return}
+        }
+        ai=0;
+      }
+      li=0;
+    }
+    pi=0;
+    if(S.last>=604){stopAudio();toast('You reached the end of the Quran.');return}
+    const ok=await showPage(S.last+1,'next');
+    if(!ok||!alive(tok)){if(P.tok===tok)stopAudio();return}
+  }
+}
+$('#spk').onclick=toggleAudio;
+try{
+  speechSynthesis.getVoices();
+  navigator.mediaSession.setActionHandler('play',()=>{if(P.state!=='playing')toggleAudio()});
+  navigator.mediaSession.setActionHandler('pause',()=>pause());
+}catch{}
+
+/* ================= Boot ================= */
+$('#cont').onclick=()=>openReader(S.last);
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.t;renderHome()};
+applyTheme();setScale(S.scale,false);renderHome();loadMeta();
+
+/* ---------- PWA: handle launcher shortcuts ---------- */
+const qa=new URLSearchParams(location.search).get('action');
+if(qa==='read')openReader(S.last);
+else if(qa==='bookmarks'){tab='marks';renderHome()}
+
+/* ---------- PWA: register service worker ---------- */
+if('serviceWorker' in navigator){
+  addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
