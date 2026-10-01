@@ -21,3 +21,6 @@ assets/pages/
 
 # Local pre-change backups, never shipped
 backup-*/
+
+# local test harness
+t-*.js

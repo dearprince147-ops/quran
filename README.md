@@ -4,9 +4,10 @@ An installable, **fully offline** Quran reader. Read the whole Quran in Arabic
 alongside a translation, and listen to recorded recitations — with no internet
 connection required once the content is in place.
 
-It runs as a [Progressive Web App](https://web.dev/learn/pwa) served over HTTP,
+It runs as a [Progressive Web App](https://web.dev/learn/pwa) served over HTTPS,
 so **one copy of the app serves every device on your network**: phones, tablets,
-and desktops all read and listen to the same bundled files.
+and desktops all read and listen to the same files — and because the app is a
+secure context, every browser offers a proper *Install* option.
 
 ---
 
@@ -31,8 +32,9 @@ and desktops all read and listen to the same bundled files.
 
 ### Listening
 
-- **Recorded recitations for every verse.** Arabic, English, and Urdu all ship
-  with complete verse-by-verse recordings — 18,708 audio files in total.
+- **Recorded recitations for every verse.** Arabic, English, and Urdu ship with
+  complete verse-by-verse recordings — 18,708 audio files in total — *when your
+  server copy includes them* (see "Where the content lives" below).
 - **Two listening languages.** Pick up to two; the first plays for a paragraph,
   then the second plays for the same paragraph.
 - **Per-language voice choice.** For each translation, switch between
@@ -47,11 +49,18 @@ and desktops all read and listen to the same bundled files.
 
 ### Offline & sharing
 
-- **Fully offline by default.** All Quran text and all bundled recitations live
-  inside the app itself — nothing is fetched from the internet to read or listen.
-- **One app, many devices.** Serve it once and every device on your Wi-Fi gets
-  the complete Quran: text and audio. Nothing is downloaded per-browser, so
-  there's no storage quota and no eviction.
+- **Works with or without bundled content.** If your server copy carries the
+  Quran text and recitations, every device uses them directly — nothing is
+  downloaded per-browser, so there's no storage quota and no eviction. If it
+  doesn't (like this repository), any device can save its own copy from inside
+  the app in one tap.
+- **Per-device downloads.** Settings → *Downloads on this device* saves the
+  Quran text (a few MB per language) and any recitation (~500 MB per language)
+  into the browser's own storage, with progress and cancel. A device with saved
+  copies keeps reading and listening even when the server is off.
+- **Device voice by default.** Until a recitation is saved or available on the
+  server, translations fall back to your device's text-to-speech — so the app
+  is fully usable the moment it opens.
 - **Installable.** Add it to your home screen and it opens full-screen, with its
   own icon and app shortcuts ("Continue reading", "Bookmarks").
 - **Per-language downloads.** If you add a translation beyond the bundled three,
@@ -84,15 +93,21 @@ manifest require `http(s)`, not `file://`).
 bash quran.sh
 ```
 
-This serves the app on a **fixed port (7860)** and prints the addresses to use:
+This serves the app over **HTTPS on a fixed port (7860)** using a self-signed
+certificate (generated automatically on first run) and prints the addresses:
 
 ```
  Quran app is running
 
-  Local:      http://localhost:7860/
-  Local (IP): http://127.0.0.1:7860/
-  Network:    http://192.168.0.43:7860/   ← use this from another device
+  Local:      https://localhost:7860/
+  Network:    https://192.168.0.43:7860/   ← use this from another device
 ```
+
+HTTPS matters: browsers only offer PWA installation from a *secure context*, so
+plain-HTTP LAN addresses never show the Install option. With the launcher, the
+first visit from a new device shows a certificate warning — choose *Advanced →
+Proceed* once and the app (and its install prompt) work from then on. The
+certificate is regenerated automatically if your LAN IP changes.
 
 The port is fixed on purpose — the app's origin (`host:port`) is what the
 service worker, caches, and installed PWA key off, so a shifting port would
@@ -115,38 +130,61 @@ window with no browser chrome.
 
 ---
 
-## How it stays offline
+## Where the content lives
 
 ```
 index.html          ← the entire app: markup, styles, and logic in one file
 manifest.json       ← PWA identity, icons, app shortcuts
 sw.js               ← service worker: app shell + stale-while-revalidate caches
-quran.sh            ← one-command launcher (Python http.server, fixed port)
+serve.py            ← HTTPS static server (self-signed cert, Range support)
+quran.sh            ← one-command launcher (fixed port, prints URLs)
 assets/
 ├── icon-192.png, icon-512.png, maskable-*.png, icon.svg, favicon-32.png
 ├── meta.json                  ← 114 surah names, verse counts, Meccan/Medinan
-├── editions.json              ← 118 translations, for "Add a language"
-├── pages/                     ← Quran text, one JSON file per page
+└── editions.json              ← 118 translations, for "Add a language"
+
+# optional, not in this repository (would add ~1.5 GB):
+assets/pages/                 ← Quran text, one JSON file per page
 │   ├── quran-uthmani/        ← Arabic   (604 pages, 2.4 MB)
 │   ├── en.sahih/             ← English  (604 pages, 2.4 MB)
 │   └── ur.jalandhry/         ← Urdu     (604 pages, 2.4 MB)
-└── audio/                     ← recitations, one MP3 per verse
+assets/audio/                 ← recitations, one MP3 per verse
     ├── ar/                    ← Arabic   (6,236 files, ~520 MB, mono 40 kbps)
     ├── en/                    ← English  (6,236 files, ~510 MB, mono 64 kbps)
-    └── ur/                    ← Urdu     (6,236 files, ~500 MB, mono 64 kbps)
+    └── ur/                    ← Urdu     (6,236 files, ~500 MB)
 ```
 
-Text and audio are **local-first**. When the app needs a page, it reads
-`assets/pages/<edition>/<page>.json`; when it needs a verse's recitation, it
-reads `assets/audio/<language>/SSSVVV.mp3` (surah and verse number packed as
-three digits each). If a file is missing — for example, a translation you added
-yourself — it falls back to the public API or CDN and keeps working, so the app
-never breaks because of a gap in the bundle.
+The repository ships only the **app** (~1 MB): code, icons, and metadata. The
+Quran text and recitations are content, and every device can fetch its own
+copy — so there's no single right place for them to live:
+
+1. **Server bundle (optional).** If `assets/pages/` and `assets/audio/` exist
+   on the machine running the server, every device on the network uses them
+   directly — no per-browser storage, no quota. This is how a personal copy
+   that was populated once behaves.
+2. **Per-device downloads (always available).** Settings → *Downloads on this
+   device* saves text packs and recitations into the browser's IndexedDB from
+   the server bundle, with progress and cancel. Works even when the server
+   copy is empty, as long as *some* source is reachable.
+3. **Public APIs (fallback).** Whatever is missing is fetched from
+   api.alquran.cloud / cdn.islamic.network / everyayah.com on demand.
+4. **Device voice (last resort).** Translations can always be spoken by the
+   device's own text-to-speech.
+
+The app tries these in order, per page and per verse, so a device always shows
+the best content it can get.
+
+Text and audio follow a **local-first** order: the device's own download, then
+the server bundle at `assets/pages/<edition>/<page>.json` and
+`assets/audio/<language>/SSSVVV.mp3` (surah and verse number packed as three
+digits each), then the public APIs — so the app never breaks because of a gap
+in any one source.
 
 The service worker precaches the app shell, metadata, and translations list at
 install, then serves cached content instantly while refreshing in the
-background. Bundled audio is deliberately *not* cached in the browser — the
-server's disk is already the single shared copy for the whole network.
+background. Bundled audio and page text stream straight from the server with
+no browser cache — the server's disk is the single shared copy; devices that
+want their own use the in-app Downloads manager.
 
 ---
 
@@ -174,8 +212,11 @@ text. The full Quran's text is under 8 MB.
 - **Remove one:** Settings lists your added languages with a *Remove* button.
 - **Change the port:** `PORT=8000 bash quran.sh`.
 - **Trim disk usage:** any of the three audio languages can be deleted from
-  `assets/audio/` to save ~500 MB; the app automatically falls back to streaming
-  from the CDN for that language.
+  `assets/audio/` to save ~500 MB; devices then use their own downloaded copy
+  or stream from the CDN for that language.
+- **Populate the bundle later:** create `assets/pages/<edition>/` and
+  `assets/audio/<lang>/` with the layouts above and the server picks them up
+  automatically — no app changes needed.
 
 ---
 
