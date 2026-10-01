@@ -18,6 +18,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PORT = int(os.environ.get("PORT", "7860"))
+CA = os.path.join(HERE, "rootCA.pem")
+CAKEY = os.path.join(HERE, "rootCA-key.pem")
 CERT = os.path.join(HERE, "cert.pem")
 KEY = os.path.join(HERE, "key.pem")
 
@@ -46,40 +48,79 @@ def lan_ip():
         return None
 
 
-def cert_is_valid(path):
-    """True if an existing cert already covers the current LAN IP (no regen needed)."""
-    if not (os.path.exists(CERT) and os.path.exists(KEY)):
+def sans_for(ip):
+    names = "DNS:localhost,IP:127.0.0.1"
+    if ip and ip != "127.0.0.1":
+        names += f",IP:{ip}"
+    return names
+
+
+def make_ca():
+    """Create the local CA once. Stable across IP changes, so devices that
+    trust it stay trusted when your LAN IP shifts."""
+    subprocess.run(
+        ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-sha256", "-nodes",
+         "-days", "3650",
+         "-keyout", CAKEY, "-out", CA,
+         "-subj", "/CN=Quran Local CA",
+         "-addext", "basicConstraints=critical,CA:TRUE",
+         "-addext", "keyUsage=critical,keyCertSign,cRLSign"],
+        check=True, capture_output=True,
+    )
+
+
+def cert_is_valid():
+    """True if a leaf cert exists, is signed by our CA, and covers the LAN IP."""
+    if not (os.path.exists(CERT) and os.path.exists(KEY) and os.path.exists(CA)):
         return False
     ip = lan_ip()
-    if not ip:
-        return True  # cannot compare; keep the existing cert
     try:
         r = subprocess.run(
+            ["openssl", "verify", "-CAfile", CA, CERT],
+            capture_output=True, text=True, timeout=10,
+        )
+        if r.returncode != 0:
+            return False
+        if not ip:
+            return True  # cannot compare SANs; keep the existing cert
+        s = subprocess.run(
             ["openssl", "x509", "-in", CERT, "-noout", "-ext", "subjectAltName"],
             capture_output=True, text=True, timeout=10,
         )
-        return ip in r.stdout
+        return ip in s.stdout
     except Exception:
         return True
 
 
 def ensure_cert():
-    """(Re)generate a self-signed cert covering localhost + the LAN IP."""
-    if cert_is_valid(CERT):
+    """Generate the CA (once) and a leaf cert signed by it for this host."""
+    if not (os.path.exists(CA) and os.path.exists(CAKEY)):
+        make_ca()
+        print(f"  Created local Certificate Authority ({CA})")
+    if cert_is_valid():
         return
     ip = lan_ip() or "127.0.0.1"
-    sans = f"DNS:localhost,IP:127.0.0.1,IP:{ip}"
+    csr = os.path.join(HERE, "server.csr")
+    ext = os.path.join(HERE, "server.ext")
+    with open(ext, "w") as f:
+        f.write("basicConstraints=CA:FALSE\n")
+        f.write("keyUsage=digitalSignature,keyEncipherment\n")
+        f.write("extendedKeyUsage=serverAuth\n")
+        f.write(f"subjectAltName={sans_for(ip)}\n")
     subprocess.run(
-        ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-sha256",
-         "-nodes", "-days", "3650",
-         "-keyout", KEY, "-out", CERT,
-         "-subj", "/CN=Quran Local App",
-         "-addext", f"subjectAltName={sans}",
-         "-addext", "keyUsage=digitalSignature,keyEncipherment",
-         "-addext", "extendedKeyUsage=serverAuth"],
+        ["openssl", "req", "-newkey", "rsa:2048", "-sha256", "-nodes",
+         "-keyout", KEY, "-out", csr, "-subj", "/CN=Quran Local App"],
         check=True, capture_output=True,
     )
-    print(f"  Generated self-signed certificate ({CERT}, {KEY})")
+    subprocess.run(
+        ["openssl", "x509", "-req", "-sha256", "-days", "825",
+         "-in", csr, "-CA", CA, "-CAkey", CAKEY, "-CAcreateserial",
+         "-out", CERT, "-extfile", ext],
+        check=True, capture_output=True,
+    )
+    os.remove(csr)
+    os.remove(ext)
+    print(f"  Generated server certificate ({CERT}) for {ip or 'this host'}")
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -90,6 +131,27 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     # Range support: python's SimpleHTTPRequestHandler ignores it, which breaks
     # seeking in long audio and can re-download a whole file on every scrub.
+    # Serve the local CA at a friendly URL with the right MIME type, so a
+    # phone can open https://<ip>:7860/ca.crt and its OS offers to install it
+    # as a trusted certificate. Without this the file downloads as text and
+    # the user has to find it in a file manager.
+    def do_GET(self):
+        if self.path.rstrip("/") in ("/ca.crt", "/rootCA.pem", "/ca.pem"):
+            if os.path.isfile(CA):
+                with open(CA, "rb") as f:
+                    body = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/x-x509-ca-cert")
+                self.send_header("Content-Disposition",
+                                 "attachment; filename=\"quran-ca.crt\"")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            self.send_error(404, "CA certificate not generated yet")
+            return
+        return super().do_GET()
+
     def send_head(self):
         path = self.translate_path(self.path)
         if os.path.isdir(path):

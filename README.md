@@ -104,10 +104,27 @@ certificate (generated automatically on first run) and prints the addresses:
 ```
 
 HTTPS matters: browsers only offer PWA installation from a *secure context*, so
-plain-HTTP LAN addresses never show the Install option. With the launcher, the
-first visit from a new device shows a certificate warning — choose *Advanced →
-Proceed* once and the app (and its install prompt) work from then on. The
-certificate is regenerated automatically if your LAN IP changes.
+plain-HTTP LAN addresses never show the Install option.
+
+**But HTTPS alone is not enough** — that was the second bug. The certificate
+also has to be *trusted* by the device. Clicking *Proceed (unsafe)* on the
+warning loads the page fine, yet the origin stays untrusted, and Chrome then
+answers "This app cannot be installed" no matter how correct the manifest is.
+So `quran.sh` mints a small local Certificate Authority and signs the server
+certificate with it. Install that CA once on each device and the warning
+vanishes *and* the Install option appears:
+
+1. On the device, open `https://<server-ip>:7860/ca.crt`
+2. Install the certificate as a **CA / root** certificate:
+   - **Android:** *Install certificate* → *CA certificate* → any name → OK
+   - **iPhone/iPad:** *Settings → Profile Downloaded → Install*
+   - **Desktop Chrome/Edge:** download the `.crt`, double-click it, place it in
+     *Trusted Root Certification Authorities*, confirm.
+3. Re-open the app — no warning, and the menu offers *Install app*.
+
+The CA (`rootCA.pem`) is generated once and kept, so trusting it is a genuine
+one-time step: it keeps validating when your LAN IP changes. The per-host leaf
+certificate is regenerated automatically if the IP does change.
 
 The port is fixed on purpose — the app's origin (`host:port`) is what the
 service worker, caches, and installed PWA key off, so a shifting port would
@@ -136,7 +153,7 @@ window with no browser chrome.
 index.html          ← the entire app: markup, styles, and logic in one file
 manifest.json       ← PWA identity, icons, app shortcuts
 sw.js               ← service worker: app shell + stale-while-revalidate caches
-serve.py            ← HTTPS static server (self-signed cert, Range support)
+serve.py            ← HTTPS static server (local CA + signed cert, Range support)
 quran.sh            ← one-command launcher (fixed port, prints URLs)
 assets/
 ├── icon-192.png, icon-512.png, maskable-*.png, icon.svg, favicon-32.png

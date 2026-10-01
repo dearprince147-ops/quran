@@ -1164,6 +1164,35 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
   });
 }
+
+/* ---------- PWA: install prompt ----------
+   Chrome fires beforeinstallprompt only when every installability criterion
+   passes (secure + trusted origin, valid manifest, active service worker).
+   If it never fires on a network device, the usual cause is an untrusted
+   certificate — the visitor proceeded past the warning instead of trusting
+   our CA, so Chrome still considers the origin not installable. */
+let deferred=null;
+addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferred=e;
+  const b=document.createElement('button');
+  b.className='chip';b.id='installBtn';
+  b.textContent='Install app';b.style.cssText='position:fixed;right:12px;bottom:calc(var(--sab,0px) + 12px);z-index:60';
+  b.setAttribute('aria-label','Install this app');
+  b.onclick=async()=>{b.remove();deferred.prompt();await deferred.userChoice;deferred=null};
+  document.body.append(b);
+});
+addEventListener('appinstalled',()=>{const b=$('#installBtn');if(b)b.remove()});
+
+/* If the page is not a secure context, say why — this is the exact reason a
+   network visitor sees 'app cannot be installed'. */
+addEventListener('load',()=>{
+  if(location.isSecureContext)return;
+  const p=document.createElement('p');p.className='note';
+  p.style.cssText='padding:10px 12px;border:1px solid var(--line);border-radius:10px';
+  p.innerHTML='This connection is not trusted, so the browser will not let you install the app. '+
+    'Open <b>'+location.origin+'/ca.crt</b> on this device and install the certificate, then reload.';
+  const h=$('.hero');if(h)h.after(p);
+});
 </script>
 </body>
 </html>

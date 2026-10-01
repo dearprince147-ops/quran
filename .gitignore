@@ -24,3 +24,8 @@ backup-*/
 
 # local test harness
 t-*.js
+
+# machine-specific TLS material
+rootCA.pem
+rootCA-key.pem
+rootCA.srl
