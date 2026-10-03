@@ -83,31 +83,11 @@ done
 
 echo " Quran app is running"
 echo
-if [[ "${CERT_FRESH:-}" == "1" ]]; then
-  echo "  ⚠ New certificate generated — devices must re-install the CA (below)."
-  echo
-fi
 echo "  Local:      https://localhost:$ACTUAL_PORT/"
-echo "  Local (IP): https://127.0.0.1:$ACTUAL_PORT/"
-if [[ -n "${LAN_IP:-}" ]]; then
-  echo "  Network:    https://$LAN_IP:$ACTUAL_PORT/   ← use this from another device"
-fi
+echo "  Network:    https://$LAN_IP:$ACTUAL_PORT/   ← use from other devices"
 echo
-echo "  ── ONE-TIME setup on each device (makes the app installable) ──"
-echo "  Browsers refuse to INSTALL a web app from an address whose"
-echo "  certificate is not trusted. 'Proceed (unsafe)' loads the page but"
-echo "  keeps the app un-installable. To fix it, trust our local CA once:"
-echo
-echo "    1. On the device, open   https://$LAN_IP:$ACTUAL_PORT/ca.crt"
-echo "    2. Android: 'Install certificate' → CA → any name → OK"
-echo "       iPhone/iPad: Settings → Profile Downloaded → Install"
-echo "       Desktop Chrome: download, then double-click the .crt →"
-echo "         'Trusted Root Certification Authorities' → yes"
-echo "    3. Re-open https://$LAN_IP:$ACTUAL_PORT/  — no warning, and the"
-echo "       menu now offers 'Install app' / 'Add to Home screen'."
-echo
-echo "  The CA file also lives at $HERE/rootCA.pem if you prefer to"
-echo "  send it manually (e.g. via a file manager or a cable)."
+echo "  📱 First time on a new device? The app will guide you through"
+echo "     a simple one-time setup to enable installation."
 echo
 echo
 echo "  Serving:  $HERE"

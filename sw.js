@@ -1,4 +1,15 @@
-/* Quran PWA service worker — offline app shell + cache-first assets/data */
+/* Quran PWA service worker — CURRENTLY UNUSED
+ *
+ * Service worker removed for simpler PWA approach (like ollama-webui-lite).
+ * The app now relies on:
+ *   - manifest.json for PWA metadata
+ *   - Browser's native install prompt
+ *   - IndexedDB for user's downloaded content
+ *   - No offline app shell caching
+ *
+ * This file is kept for reference in case offline support is needed later.
+ * To re-enable: uncomment the registration in index.html.
+ */
 'use strict';
 
 const VER = 'qr-pwa-v7';
