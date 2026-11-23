@@ -29,3 +29,6 @@ t-*.js
 rootCA.pem
 rootCA-key.pem
 rootCA.srl
+
+# Local planning docs (not shipped)
+MINI-PLAYER-PLAN.md

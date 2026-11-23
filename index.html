@@ -52,7 +52,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .cont small{opacity:.7;font-size:.82rem; color: var(--mute);}
 .cont .go{font-family:var(--f-ar);font-size:1.4rem; color: var(--acc);}
 .tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:16px}
-.tabs button{flex:1;padding:14px 2px;color:var(--mute);border-bottom:1.5px solid transparent;margin-bottom:-1px;font-size:.88rem; font-weight: 400; letter-spacing: 0.02em;}
+.tabs button{flex:1;padding:14px 2px;color:var(--mute);border-bottom:1.5px solid transparent;margin-bottom:-1px;font-size:.88rem; font-weight: 400; letter-spacing: 0.02em;white-space:nowrap}
+@media (max-width:400px){.tabs button{font-size:.78rem;padding:14px 1px;letter-spacing:0}}
 .tabs button[aria-selected=true]{color:var(--fg);border-color:var(--fg);font-weight:500}
 .search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit;margin-bottom:12px; font-size: 0.95rem;}
 .list{list-style:none;margin:0;padding:0}
@@ -69,6 +70,20 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .empty{color:var(--mute);padding:40px 4px;text-align:center; font-size: 0.9rem; line-height: 1.6;}
 .grp{padding:18px 2px;border-bottom:1px solid var(--line)}
 .grp h3{margin:0 0 12px;font-size:.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mute); font-weight: 500;}
+/* Learn tab: teaching cards */
+.card{padding:20px 2px;border-bottom:1px solid var(--line)}
+.card h3{margin:0 0 6px;font-size:1.05rem;font-weight:500;letter-spacing:.01em}
+.card .kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);font-weight:500;margin:0 0 8px}
+.card p{margin:0 0 10px;color:var(--mute);font-size:.92rem;line-height:1.65}
+.card p strong{color:var(--fg);font-weight:500}
+.card .ar{font-family:var(--f-ar);font-size:1.5rem;line-height:2.2;color:var(--fg);margin:0 0 6px}
+.card .ar small{display:block;font-family:var(--f-ui);font-size:.8rem;color:var(--mute);line-height:1.5;margin-top:4px}
+.card .jump{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.card .jump button{padding:9px 14px;border:1px solid var(--line);border-radius:999px;font-size:.85rem;min-height:40px;color:var(--fg);background:var(--card)}
+.card .jump button:active{background:var(--hl)}
+.card ol{margin:0;padding-inline-start:1.2em;color:var(--mute);font-size:.92rem;line-height:1.7}
+.card ol li{margin-bottom:8px}
+.card ol li strong{color:var(--fg);font-weight:500}
 .seg{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--fg);font-size:.85rem;min-height:38px; transition: all 0.2s ease;}
 .chip[aria-pressed=true]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
@@ -182,6 +197,7 @@ body[data-audio=paused] #spk{border-color:var(--fg); color: var(--fg);}
     <button role="tab" data-t="surahs">Surahs</button>
     <button role="tab" data-t="juz">Juz</button>
     <button role="tab" data-t="marks">Bookmarks</button>
+    <button role="tab" data-t="learn">Learn</button>
     <button role="tab" data-t="set">Settings</button>
   </nav>
   <section id="panel"></section>
@@ -500,6 +516,7 @@ function renderPanel(){
   if(tab==='surahs')panelSurahs();
   else if(tab==='juz')panelJuz();
   else if(tab==='marks')panelMarks();
+  else if(tab==='learn')panelLearn();
   else panelSettings();
 }
 const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -532,6 +549,37 @@ function panelMarks(){
     li.style.display='flex';li.style.alignItems='center';li.append(x);
     $('#list').append(li);
   });
+}
+
+/* ================= Learn: how the Quran is put together =================
+   Teaching notes adapted from the Quran-structure explainer by The Ayah Lab.
+   Facts are standard ulum al-Quran; the length groups are named in the hadith
+   of Wathilah ibn al-Asqa' (Musnad Ahmad) and are shown by name only, since
+   scholars draw their exact boundaries differently. */
+function panelLearn(){
+  panel.innerHTML='';
+  const card=(kicker,title,html,links)=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<p class="kicker"></p><h3></h3>${html}`;d.querySelector('.kicker').textContent=kicker;d.querySelector('h3').textContent=title;panel.append(d);if(links)jump(d,links);return d};
+  const jump=(d,items)=>{const w=document.createElement('div');w.className='jump';
+    items.forEach(([label,p])=>{const b=document.createElement('button');b.textContent=label;b.onclick=()=>openReader(p);w.append(b)});d.append(w)};
+  const surah=i=>`${i+1}. ${NAMES[i]}`;
+
+  const head=document.createElement('p');head.className='note';
+  head.textContent='A short guide to how the 114 surahs fit together — the things that are easy to miss when you only read page by page.';
+  panel.append(head);
+
+  card('Order','The Quran was revealed in pieces','<p>The first verses revealed were from <strong>Surah 96, Al-\'Alaq</strong> — not Surah 1. The Quran came down gradually over about <strong>23 years</strong>, and in a different order from the one it is written in today. The order you read is the order it was arranged into, not the order it arrived.</p>',[[surah(95),START[95]],[surah(0),START[0]]]);
+
+  card('Classification by time','Makki and Madani','<p>Surahs are dated by <strong>when</strong> they were revealed, not where they sit in the book.</p><p><strong>Makki</strong> — before the Hijrah. Usually short and intense: God’s oneness, the afterlife, stories of the prophets. They often address <em>“O mankind.”</em></p><p><strong>Madani</strong> — after the Hijrah. Usually longer, building a community: law, family, trade, war and peace. They often address <em>“O you who believe.”</em></p>',[['Makki example: '+surah(95),START[95]],['Madani example: '+surah(1),START[1]]]);
+
+  card('Classification by length','The four groups the Prophet ﷺ named','<p>In a hadith reported by Wathilah ibn al-Asqa‘, the Prophet ﷺ described the Quran in four lengths:</p><ol><li><strong>As-Sab‘ al-Ṭiwāl</strong> — the long seven</li><li><strong>Al-Mi’ūn</strong> — the hundreds</li><li><strong>Al-Mathānī</strong> — the oft-repeated</li><li><strong>Al-Mufaṣṣal</strong> — the separated (the later, shorter surahs)</li></ol><p>Scholars draw the exact boundaries a little differently, so this app groups them by name rather than by a fixed list.</p>');
+
+  card('The hidden design','Ends and beginnings that answer each other','<p>The first surah ends with a request — <em>“Guide us to the straight path”</em> (1:6). The very next surah opens with the answer — <em>“This is the Book… a guidance…”</em> (2:2). They were revealed years apart, in different cities.</p><p>And the book opens and closes with the same three names of God: <strong>Lord</strong>, <strong>King</strong>, <strong>God</strong> — Al-Fātiḥa at the start, An-Nās at the end.</p>',[['1:6 — the request',START[0]],['2:2 — the answer',START[1]],['114 — the closing',START[113]]]);
+
+  card('Three lessons','What to do with this','<ol><li>When you recite Al-Fātiḥa, <strong>pause at “guide us”</strong> — the answer is waiting on the next page.</li><li>When faith feels weak, <strong>read the short Makki surahs</strong>. They were revealed for hearts under pressure.</li><li><strong>Read the Quran as one book</strong>, not in disconnected pieces.</li></ol>');
+
+  const src=document.createElement('p');src.className='note';
+  src.textContent='Adapted from “The Ayah Lab” (Quran structure explainer). Translations follow Sahih International.';
+  panel.append(src);
 }
 
 /* language chips shared by Settings and the reading sheet */

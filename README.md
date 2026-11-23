@@ -29,6 +29,10 @@ secure context, every browser offers a proper *Install* option.
   offers it front-and-centre next time.
 - **Bookmarks.** Press and hold anywhere on a page to bookmark it. Bookmarks are
   listed and removable from the dashboard, and sync with the app's shortcuts.
+- **Learn.** A short guide to how the Quran is put together — revelation order
+  vs. the written order, Makki vs. Madani, the four length groups the Prophet ﷺ
+  named, and the links between the first and last surahs. Each point has a button
+  that opens the relevant surah straight in the reader.
 
 ### Listening
 
